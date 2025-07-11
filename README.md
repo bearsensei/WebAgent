@@ -1,6 +1,6 @@
 <div align="center">
 
-<h2>WebAgent for Information Seeking bulit by Tongyi Lab, Alibaba Group <img src="./assets/tongyi.png" width="30px" style="display:inline;"></h2>
+<h2>WebAgent for Information Seeking built by Tongyi Lab, Alibaba Group <img src="./assets/tongyi.png" width="30px" style="display:inline;"></h2>
 
 </div>
 <p align="center">

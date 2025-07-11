@@ -46,7 +46,17 @@ pip install -r requirements.txt
 
 You can download WebSailor via Hugging Face [🤗 HuggingFace](https://huggingface.co/Alibaba-NLP/WebSailor-3B).
 
-### Step 2: Inference with tools
+### Step 2: Prepare the Evaluation Datasets
+
+Only a sample file `example.jsonl` remains in `src/eval_data/` to prevent test data leakage.  
+Please download the following official benchmarks and save them in the same folder with the listed filenames, following the exact JSONL format of `example.jsonl`:
+
+- `browsecomp_en.jsonl`
+- `browsecomp_zh.jsonl`
+- `gaia.jsonl`
+- `xbench-deepsearch.jsonl`
+
+### Step 3: Inference with tools
 
 We provide an example script for evaluation at /src/scripts/test.sh.
 
