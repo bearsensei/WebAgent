@@ -1,14 +1,13 @@
 import copy
 from typing import Dict, Iterator, List, Literal, Union, Optional
+import re
+from datetime import datetime, timedelta, timezone
 
 from qwen_agent.agents import Assistant
 from qwen_agent.llm import BaseChatModel
 from qwen_agent.llm.schema import  USER, FUNCTION, Message, DEFAULT_SYSTEM_MESSAGE,SYSTEM,ROLE
 from qwen_agent.tools import BaseTool
 from qwen_agent.log import logger
-from datetime import datetime, timedelta, timezone
-
-
 
 # Time utilities for enhanced time awareness
 wdays = {
@@ -70,8 +69,6 @@ def enhance_time_awareness(text: str) -> str:
     
     return enhanced_text
 
-
-
 class SearchAgent(Assistant):
 
     def __init__(self,
@@ -100,10 +97,6 @@ class SearchAgent(Assistant):
 
     def insert_in_custom_user_prompt(self, messages: List[Message]) -> List[Message]:
         for message in messages:
-            # if message.role == USER:
-            #     message.content[0].text = self.custom_user_prompt + # message.content[0].text
-            #     break
-            
             if message.role == USER:
                 # Enhance user message with time awareness
                 original_text = message.content[0].text
@@ -113,6 +106,7 @@ class SearchAgent(Assistant):
                 message.content[0].text = self.custom_user_prompt + enhanced_text
                 break
         return messages
+    
     def _run(self,
              messages: List[Message],
              lang: Literal['en', 'zh'] = 'zh',
@@ -158,6 +152,14 @@ class SearchAgent(Assistant):
                     use_tool, tool_name, tool_args, _ = self._detect_tool(out)
                     logger.info(f"{self.name} use_tool: {use_tool}, tool_name: {tool_name}, tool_args: {tool_args}")
                     if use_tool:
+                        # Enhance tool arguments with time awareness
+                        if tool_name == 'search' and 'query' in tool_args:
+                            original_query = tool_args['query']
+                            enhanced_query = enhance_time_awareness(original_query)
+                            if enhanced_query != original_query:
+                                logger.info(f"Enhanced search query: '{original_query}' -> '{enhanced_query}'")
+                                tool_args['query'] = enhanced_query
+                        
                         tool_result = self._call_tool(tool_name, tool_args, messages=messages, **kwargs)
                         fn_msg = Message(
                             role=FUNCTION,
@@ -184,4 +186,3 @@ class SearchAgent(Assistant):
             print(new_messages)
             for rsp in self.addtional_agent._run(messages=new_messages, **kwargs):
                 yield new_response + rsp
-        
